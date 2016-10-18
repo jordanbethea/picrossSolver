@@ -1,8 +1,45 @@
 package org.jordan.games
 
-class PicrossBoard (width:Int = 10, height:Int = 10){
+import scala.util.Random
 
-  val cellMatrix = Array.tabulate[Cell](width, height)((x:Int, y:Int) => new Cell(x, y))
+object PicrossBoard {
+  def blankBoard(width:Int = 10, height:Int = 10):PicrossBoard = {
+    new PicrossBoard(width, height)
+  }
+
+  def fullRandomBoard(width:Int = 10, height:Int = 10) :PicrossBoard = {
+    new PicrossBoard(width, height, BoardMode.FullRandom, None)
+  }
+
+  def testBoard(width:Int = 10, height:Int = 10) : PicrossBoard = {
+    new PicrossBoard(width, height, BoardMode.Test, None)
+  }
+
+  def blankCell(x:Int, y:Int):Cell = {
+    new Cell(x, y)
+  }
+
+  def randomCell(x:Int, y:Int):Cell = {
+    new Cell(x, y, Random.nextBoolean)
+  }
+}
+
+class PicrossBoard (width:Int = 10, height:Int = 10, mode:BoardMode.Value = BoardMode.Blank, amountCount:Option[Int] = None){
+
+  var solved = false
+
+  val testMode = mode match{
+    case BoardMode.Test => true
+    case _ => false
+  }
+
+  val creationMethod = mode match{
+    case BoardMode.Blank => PicrossBoard.blankCell(_,_)
+    case BoardMode.FullRandom => PicrossBoard.randomCell(_,_)
+    case BoardMode.Test => PicrossBoard.blankCell(_,_)
+  }
+
+  val cellMatrix = Array.tabulate[Cell](width, height)(creationMethod)
 
   val rowClues = Array.fill[List[Int]](height)(Nil)
   val colClues = Array.fill[List[Int]](width)(Nil)
@@ -23,7 +60,8 @@ class PicrossBoard (width:Int = 10, height:Int = 10){
       colClues(row) = calculateClueList(cellMatrix(row))
     }
     for(column <- 0 until width){
-      rowClues(column) = calculateClueList(cellMatrix.map{_(column)}) //map creates new array by applying func, gets each col count val
+      //map creates new array by applying func, gets each col count val
+      rowClues(column) = calculateClueList(cellMatrix.map{_(column)})
     }
   }
 
@@ -34,7 +72,10 @@ class PicrossBoard (width:Int = 10, height:Int = 10){
           currentCount :: prevClues
         else
           prevClues
-      }else if(cellList.head.marking == Marking.Active){
+      }else if(testMode match{
+        case true => cellList.head.marking == Marking.Active
+        case false => cellList.head.active == true
+      }){
         clueCounter(cellList.tail, currentCount + 1, prevClues) //current cell is active, add 1 to clue value
       }else{
         if(currentCount > 0)
@@ -45,6 +86,14 @@ class PicrossBoard (width:Int = 10, height:Int = 10){
     }
     val cellList = cellArray.toList
     return clueCounter(cellList, 0, Nil)
+  }
+
+  /*
+  Checks if board solved - if a mismatch exists, then not solved
+   */
+  def checkSolved:Boolean = {
+    solved = !cellMatrix.exists(_.exists(_.valueMismatch))
+    solved
   }
 
 }
@@ -84,6 +133,18 @@ case class Cell (val xPos:Int,
       marking = Marking.Inactive
   }
   def blank = { marking = Marking.Unknown}
+
+  /*
+  * true if marking is not same as active - used to check for game finish
+  * active cells need to be marked active, inactive just need to not be marked active
+  */
+
+  def valueMismatch:Boolean = {
+    active match{
+      case true => marking != Marking.Active
+      case false => marking == Marking.Active
+    }
+  }
 }
 
   /*
@@ -92,4 +153,9 @@ case class Cell (val xPos:Int,
 object Marking extends Enumeration{
   type Marking = Value
   val Unknown, Active, Inactive = Value
+}
+
+object BoardMode extends Enumeration{
+  type BoardMode = Value
+  val Blank, FullRandom, Count, SetLayout, Test = Value
 }
