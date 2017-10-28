@@ -1,4 +1,4 @@
-#Picross Solver
+# Picross Solver
 
 The goal was to create a simple picross game, [also called a Nonogram](https://en.wikipedia.org/wiki/Nonogram)
 and then to also have an automatic solver, where the user could input puzzles, and the program would tell you if they
