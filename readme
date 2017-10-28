@@ -1,3 +1,16 @@
+#Picross Solver
+
+The goal was to create a simple picross game, [also called a Nonogram](https://en.wikipedia.org/wiki/Nonogram)
+and then to also have an automatic solver, where the user could input puzzles, and the program would tell you if they
+are solvable, and the steps to solve it.
+
+Right now there is a simple picross game, where puzzles are generated and can be solved, but no solver code is created yet.
+
+The code is in scala because this was also a project to help me learn scala. It uses a simple scala game engine with some
+very bare bones graphics.  https://github.com/dunnololda/scage
+
+The following are the readme instructions from the original engine project:
+
 To create a runnable offline distribution type in console:
 
   $ mvn clean package -Pbuild

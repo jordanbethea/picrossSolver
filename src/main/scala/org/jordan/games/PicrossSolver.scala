@@ -78,9 +78,10 @@ object PicrossSolverApp extends ScageScreenApp ("Picross Solver", 640,480) {
   }
 
   def drawSolved: Unit = {
-    if(gameBoard.solved){
+    if (gameBoard.solved)
       print("SOLVED WOOHOO", Vec(250, 250), RED)
-    }
+    else
+      print("Not solved yet", Vec(250, 250), GRAY)
   }
 
   def drawButtons: Unit = {
@@ -122,9 +123,10 @@ object PicrossSolverApp extends ScageScreenApp ("Picross Solver", 640,480) {
   def drawCell(currentCell:Cell): Unit ={
     currentCell.marking match {
       case Marking.Active =>
+        val cellColor = if(currentCell.active) BLACK else GRAY
         drawFilledRect(new Vec(gridOffsetLeft + (currentCell.xPos * cellWidth),
                   gridOffsetBottom + (currentCell.yPos * cellHeight) + cellHeight), //rects are drawn starting at top left corner
-          cellWidth, cellHeight, BLACK)
+          cellWidth, cellHeight, cellColor)
       case Marking.Inactive =>
         drawInactiveCell(currentCell)
       case _ =>
@@ -186,7 +188,8 @@ object PicrossSolverApp extends ScageScreenApp ("Picross Solver", 640,480) {
  def leftClickHandler(click:Vec): Unit ={
    val (xcellPos, ycell) = cellGridFromCoord(click)
    if(xcellPos != -1 && ycell != -1)
-     gameBoard.cellMatrix(xcellPos)(ycell).leftClickBehavior
+     //gameBoard.cellMatrix(xcellPos)(ycell).leftClickBehavior
+     gameBoard.leftClick(xcellPos, ycell)
    else if (clickOnRandomizeButton(click))
      randomizeBoard
    else if (clickOnClearButton(click))
@@ -197,37 +200,14 @@ object PicrossSolverApp extends ScageScreenApp ("Picross Solver", 640,480) {
 
   def randomizeBoard: Unit ={
     gameBoard = PicrossBoard.fullRandomBoard(xGridSize, yGridSize)
-/*    if(randomizeTextColor == WHITE)
-      randomizeTextColor = BLACK
-    else randomizeTextColor = WHITE
-    if(randomizeBGColor == WHITE)
-      randomizeTextColor = BLACK
-    else randomizeTextColor = WHITE
-*/
   }
 
   def clearBoard = {
     gameBoard = PicrossBoard.blankBoard(xGridSize, yGridSize)
-    /*
-    if(clearTextColor == WHITE)
-      clearTextColor = BLACK
-    else clearTextColor = WHITE
-    if(clearBGColor == WHITE)
-      clearTextColor = BLACK
-    else clearTextColor = WHITE
-    */
   }
 
   def switchTestMode = {
     gameBoard = PicrossBoard.testBoard(xGridSize, yGridSize)
-    /*
-    if(clearTextColor == WHITE)
-      clearTextColor = BLACK
-    else clearTextColor = WHITE
-    if(clearBGColor == WHITE)
-      clearTextColor = BLACK
-    else clearTextColor = WHITE
-  */
   }
 
   def rightClickHandler(click:Vec) = {

@@ -51,6 +51,11 @@ class PicrossBoard (width:Int = 10, height:Int = 10, mode:BoardMode.Value = Boar
     cellMatrix(x)(y).deactivate
   }
 
+  def leftClick(x:Int, y:Int) = {
+    cellMatrix(x)(y).leftClickBehavior
+    solved = checkSolved
+  }
+
   def markFilled(x:Int, y:Int): Unit = { cellMatrix(x)(y).markActive }
   def markEmpty(x:Int, y:Int): Unit = {cellMatrix(x)(y).markInactive }
   def delete(x:Int, y:Int){ cellMatrix(x)(y).blank }

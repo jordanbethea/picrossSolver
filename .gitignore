@@ -17,3 +17,4 @@ project/plugins/project/
 .worksheet
 /local-build.properties
 /picrossSolver.iml
+.idea/*
